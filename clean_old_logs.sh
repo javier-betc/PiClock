@@ -1,4 +1,6 @@
 #!/bin/bash
+# added sudo crontab to the pi to trim old data at 2 am:
+# 0 2 * * * /bin/bash /home/javier/nfc/clean_old_logs.sh >/dev/null 2>&1
 
 TIMES_FILE="/home/javier/nfc/times.csv"
 

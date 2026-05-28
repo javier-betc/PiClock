@@ -1,4 +1,66 @@
 <?php
+// Start a secure session to remember the login state
+session_start();
+
+// 1. CHOOSE YOUR MANAGEMENT PASSWORD HERE:
+define('MANAGEMENT_PASSWORD', 'SuperSecurePassword123'); 
+
+// Handle Logout if someone appends ?logout=1 to the URL
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+}
+
+// Handle Login Form Submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_password'])) {
+    if ($_POST['login_password'] === MANAGEMENT_PASSWORD) {
+        $_SESSION['authenticated'] = true;
+        header("Location: " . $_SERVER['PHP_SELF']); // Reload page to clean POST data
+        exit;
+    } else {
+        $login_error = "Incorrect password access denied.";
+    }
+}
+
+// If the user is not authenticated, show the login gate and STOP execution
+if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
+    ?>
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Management Login</title>
+        <style>
+            body { font-family: Arial, sans-serif; background-color: #f4f6f9; padding-top: 100px; text-align: center; }
+            .login-box { max-width: 320px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+            h2 { margin-bottom: 20px; color: #333; }
+            input[type="password"] { width: 90%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+            button { width: 97%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+            button:hover { background-color: #0056b3; }
+            .error { color: #dc3545; font-weight: bold; margin-bottom: 15px; font-size: 14px; }
+        </style>
+    </head>
+    <body>
+        <div class="login-box">
+            <h2>Management Access</h2>
+            <?php if (isset($login_error)): ?>
+                <div class="error"><?= htmlspecialchars($login_error) ?></div>
+            <?php endif; ?>
+            <form method="POST">
+                <input type="password" name="login_password" placeholder="Enter Password" required autofocus>
+                <button type="submit">Log In</button>
+            </form>
+        </div>
+    </body>
+    </html>
+    <?php
+    exit; // Crucial: Stops the server from processing anything below this line
+}
+
+// =========================================================================
+// --- YOUR ORIGINAL UNTOUCHED CODE BEGINS HERE ---
+// =========================================================================
+
 // Configuration you NEED TO CHANGE:
 $pi_ip = "192.168.X.X"; 
 $pi_user = "YOURPIUSER";

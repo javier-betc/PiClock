@@ -1,11 +1,12 @@
 <?php
-// Start a secure session to remember the login state
+// Start a secure session
 session_start();
 
 // 1. CHOOSE YOUR MANAGEMENT PASSWORD HERE:
 define('MANAGEMENT_PASSWORD', 'SuperSecurePassword123'); 
+define('TIMEOUT_SECONDS', 20); // Inactivity threshold
 
-// Handle Logout if someone appends ?logout=1 to the URL
+// Handle Explicit Logout
 if (isset($_GET['logout'])) {
     session_destroy();
     header("Location: " . $_SERVER['PHP_SELF']);
@@ -13,18 +14,33 @@ if (isset($_GET['logout'])) {
 }
 
 // Handle Login Form Submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_password'])) {
-    if ($_POST['login_password'] === MANAGEMENT_PASSWORD) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['x_secure_token'])) {
+    if ($_POST['x_secure_token'] === MANAGEMENT_PASSWORD) {
         $_SESSION['authenticated'] = true;
-        header("Location: " . $_SERVER['PHP_SELF']); // Reload page to clean POST data
+        $_SESSION['last_activity'] = time(); // Initialize activity timestamp
+        header("Location: " . $_SERVER['PHP_SELF']);
         exit;
     } else {
         $login_error = "Incorrect password access denied.";
     }
 }
 
-// If the user is not authenticated, show the login gate and STOP execution
+// Server-Side Inactivity Check (Fallback for security alignment)
+if (isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true) {
+    if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > TIMEOUT_SECONDS)) {
+        session_destroy();
+        header("Location: " . $_SERVER['PHP_SELF'] . "?reason=timeout");
+        exit;
+    }
+    $_SESSION['last_activity'] = time(); // Refresh active timestamp on server interactions
+}
+
+// If user is not authenticated, show the login gate
 if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
+    $display_msg = "Management Access";
+    if (isset($_GET['reason']) && $_GET['reason'] === 'timeout') {
+        $login_error = "Logged out due to 20 seconds of inactivity.";
+    }
     ?>
     <!DOCTYPE html>
     <html>
@@ -42,24 +58,20 @@ if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
     </head>
     <body>
         <div class="login-box">
-            <h2>Management Access</h2>
+            <h2><?= htmlspecialchars($display_msg) ?></h2>
             <?php if (isset($login_error)): ?>
                 <div class="error"><?= htmlspecialchars($login_error) ?></div>
             <?php endif; ?>
-            <form method="POST">
-                <input type="password" name="login_password" placeholder="Enter Password" required autofocus>
+            <form method="POST" autocomplete="off">
+                <input type="password" name="x_secure_token" placeholder="Enter Password" autocomplete="new-password" required autofocus>
                 <button type="submit">Log In</button>
             </form>
         </div>
     </body>
     </html>
     <?php
-    exit; // Crucial: Stops the server from processing anything below this line
+    exit;
 }
-
-// =========================================================================
-// --- YOUR ORIGINAL UNTOUCHED CODE BEGINS HERE ---
-// =========================================================================
 
 // Configuration you NEED TO CHANGE:
 $pi_ip = "192.168.X.X"; 
@@ -128,6 +140,9 @@ if (($handle = fopen($local_tmp, "r")) !== FALSE) {
     <link rel="icon" href="favicon.svg">
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; }
+        .header-container { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ddd; padding-bottom: 10px; margin-bottom: 20px; }
+        .logout-btn { padding: 8px 12px; background-color: #dc3545; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px; }
+        .logout-btn:hover { background-color: #bd2130; }
         table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background-color: #f2f2f2; }
@@ -138,7 +153,11 @@ if (($handle = fopen($local_tmp, "r")) !== FALSE) {
 </head>
 <body>
 
-    <h2>Assign Card Names</h2>
+    <div class="header-container">
+        <h2>Assign Card Names</h2>
+        <a href="?logout=1" class="logout-btn">Log Out</a>
+    </div>
+
     <p>Update the names below to replace the _UNASSIGNED values</p>
     <p>When done, scroll to the bottom and click on "Save Changes"</p>
     <p>WARNING! HANDLE WITH CARE! CHECK TWICE BEFORE SAVING!</p>
@@ -165,6 +184,32 @@ if (($handle = fopen($local_tmp, "r")) !== FALSE) {
         </table>
         <button type="submit">Save Changes</button>
     </form>
+
+    <script>
+        (function() {
+            const timeoutDuration = 20000; // 20 seconds in milliseconds
+            let idleTimer;
+
+            function resetTimer() {
+                clearTimeout(idleTimer);
+                idleTimer = setTimeout(logoutUser, timeoutDuration);
+            }
+
+            function logoutUser() {
+                // Redirect user to logout execution parameter with a reason string attached
+                window.location.href = window.location.pathname + "?reason=timeout";
+            }
+
+            // Monitor continuous explicit interactions across the DOM space
+            window.onload = resetTimer;
+            document.onmousemove = resetTimer;
+            document.onkeypress = resetTimer;
+            document.onmousedown = resetTimer; 
+            document.ontouchstart = resetTimer;
+            document.onclick = resetTimer;
+            document.onscroll = resetTimer;
+        })();
+    </script>
 
 </body>
 </html>

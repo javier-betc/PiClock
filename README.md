@@ -1,6 +1,6 @@
 # PiClock
 custom made Punchcard-System with NFC cards and a Raspberry Pi
-
+<img width="302" height="310" alt="image" src="https://github.com/user-attachments/assets/7b761d14-6d1e-4146-a3ca-681ca6b5766d" />
 Materials required:
  - Raspberry Pi2 (32bit) (when tested on Pi 4 or newer struggled as it's 64bit and too fast)
  - Pi2 PSU

@@ -83,7 +83,7 @@
             </div>
         
         <div class="footer">
-            'PiClock' NFC Timestamp Viewer &copy; 2025-<?php echo date('Y');?> <a href="mailto:javier@booksetc.co.uk" style="color: #fff;">Javier Puig</a>
+            'PiClock' NFC Timestamp Viewer <span style="display: inline-block; transform: rotateY(180deg);">&copy;</span>2025-<?php echo date('Y');?> made with &hearts; by <a href="mailto:javier@booksetc.co.uk" style="color: #fff;">F.Javier Puig Diaz</a>
         </div>
     </div>
 

@@ -50,7 +50,7 @@ if __name__ == '__main__':
                 continue
             temp = vcgencmd.measure_temp()
             s = ["UID: ", [hex(i) for i in uid], temp, str(datetime.now())]
-            with open("/home/javier/nfc/times.csv", "a") as f:
+            with open("/home/YOURPIUSER/nfc/times.csv", "a") as f:
                 f.writelines(str(s))
                 f.write("\n")
             print(s) # debug

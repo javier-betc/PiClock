@@ -58,4 +58,6 @@ In my python script I added the sensor, temp of the CPU for monitoring / troubes
 
 The PC that hosts the webapp (a php page really running on mounted volume of a docker-cmopose-lamp install) takes care of all the logic. The Excel only needs access to the NAS and also takes care of all the logic.
 
-Prototyped, Proyected and Created between summer 2025 and summer 2026 by Francisco Javier Puig Diaz (https://github.com/habiwan).
+Prototyped, Proyected and Created between summer 2025 and summer 2026 by Francisco Javier Puig Diaz for BOOKS etc. (https://github.com/javier-betc)
+
+All software used is GPL licenced and hence there is no warranty for this modified free software either.

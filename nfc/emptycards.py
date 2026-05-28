@@ -4,8 +4,10 @@ stretching support), SPI, or UART. SPI is best, it uses the most pins but
 is the most reliable and universally supported.
 After initialization, try waving various 13.56MHz RFID cards over it!
 Modified and enhanced by Javier@Books etc. May/June 2025
-This example is to get an excel file file written with the codes and matching names so a number can be written on empty cards
-uses the production names.csv
+This optional set of script/service is to get an excel file file written with the codes of empty cards you swipe (whevever you get new cards) 
+so that matching names to their unique ID is simple. I suggest writing with a pen a number to a label on those new empty cards...
+This uses the same production names.csv file, new names like _UNASSIGNEDXX should be column 2 column 1 the unique ID stripped as shown in the php example
+or use an EXCEL with the formulae shown in the main README.md ....
 GOAL is to see the results after swiping a card and writing a little number in the corner with the unassigned card number for future employees / temps...
 """
 
@@ -16,7 +18,7 @@ from time import sleep # added for buzzer
 from pathlib import Path # added to 'touch' the csv if it does not exist yet or gets deleted
 
 from pn532 import *
-Path('/home/javier/nfc/emptycards.csv').touch()
+Path('/home/YOURPIUSER/nfc/emptycards.csv').touch()
 
 if __name__ == '__main__':
     try:
@@ -49,7 +51,7 @@ if __name__ == '__main__':
                 continue
             temp = vcgencmd.measure_temp()
             s = ["UID: ", [hex(i) for i in uid], temp, str(datetime.now())]
-            with open("/home/javier/nfc/emptycards.csv", "a") as f:
+            with open("/home/YOURPIUSER/nfc/emptycards.csv", "a") as f:
                 f.writelines(str(s))
                 f.write("\n")
             print(s) # debug

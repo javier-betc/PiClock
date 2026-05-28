@@ -3,7 +3,7 @@
 session_start();
 
 // 1. CHOOSE YOUR MANAGEMENT PASSWORD HERE:
-define('MANAGEMENT_PASSWORD', 'BOOKSetc.8732!'); 
+define('MANAGEMENT_PASSWORD', 'passwrd456'); 
 define('MANAGEMENT_TIMEOUT_SECONDS', 20); // Inactivity threshold
 
 // Handle Explicit Logout

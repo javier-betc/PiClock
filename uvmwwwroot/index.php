@@ -3,19 +3,20 @@
 session_start();
 
 // 1. CHOOSE YOUR MANAGEMENT PASSWORD HERE:
-define('MANAGEMENT_PASSWORD', 'STAFFPASSWORD'); // find a better way if this bothers you. Hint: with a local file instead, this could be improved... BY YOU!
-define('TIMEOUT_SECONDS', 7200); // Inactivity threshold
+define('STAFF_PASSWORD', '8732!'); // find a better way if this bothers you. Hint: with a local file instead, this could be improved... BY YOU!
+define('TIMEOUT_SECONDS', 86400); // Inactivity threshold
 
 // Handle Explicit Logout
 if (isset($_GET['logout'])) {
-    session_destroy();
+    unset($_SESSION['authenticated']);
+    unset($_SESSION['last_activity']);
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
 }
 
 // Handle Login Form Submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['x_secure_token'])) {
-    if ($_POST['x_secure_token'] === MANAGEMENT_PASSWORD) {
+    if ($_POST['x_secure_token'] === STAFF_PASSWORD) {
         $_SESSION['authenticated'] = true;
         $_SESSION['last_activity'] = time(); // Initialize activity timestamp
         header("Location: " . $_SERVER['PHP_SELF']);
@@ -28,24 +29,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['x_secure_token'])) {
 // Server-Side Inactivity Check (Fallback for security alignment)
 if (isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true) {
     if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > TIMEOUT_SECONDS)) {
-        session_destroy();
+        unset($_SESSION['authenticated']);
+        unset($_SESSION['last_activity']);
         header("Location: " . $_SERVER['PHP_SELF'] . "?reason=timeout");
         exit;
     }
     $_SESSION['last_activity'] = time(); // Refresh active timestamp on server interactions
 }
 
+// If a timeout redirect occurred, clear the access tokens immediately
+if (isset($_GET['reason']) && $_GET['reason'] === 'timeout') {
+    unset($_SESSION['authenticated']);
+    unset($_SESSION['last_activity']);
+}
+
 // If user is not authenticated, show the login gate
 if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
     $display_msg = "Staff Access";
     if (isset($_GET['reason']) && $_GET['reason'] === 'timeout') {
-        $login_error = "Logged out due to 2 hours of inactivity.";
+        $login_error = "Logged out due to 24 hours of inactivity.";
     }
     ?>
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Management Login</title>
+        <title>Staff Login</title>
         <style>
             body { font-family: Arial, sans-serif; background-color: #f4f6f9; padding-top: 100px; text-align: center; }
             .login-box { max-width: 320px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
@@ -123,7 +131,7 @@ if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
         .time-badge { background: #e3f2fd; color: #0d47a1; padding: 6px 14px; border-radius: 30px; font-size: 0.9rem; font-weight: 600; border: 1px solid #bbdefb; box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
         
         .table-header { display: flex; justify-content: space-between; padding: 15px 25px; background: #0d47a1; color: white; font-weight: 500; border-radius: 12px; margin-bottom: 15px; position: relative; z-index: 2; }
-		.table-header a, .table-header a:link, .table-header a:visited { color: #ffffffff !important; text-decoration: none; cursor: default; }
+        .table-header a, .table-header a:link, .table-header a:visited { color: #ffffffff !important; text-decoration: none; cursor: default; }
         .footer { text-align: center; margin-top: 40px; color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; }
     </style>
 </head>
@@ -131,9 +139,9 @@ if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
     <div class="container">
         <header>
             <h1>'PiClock' NFC System</h1>
-            <p>custom made Punchcard-System for <b>BOOKS </b><small><i>etc.</i></small></p>
+            <p>custom made Punchcard-System replacement for <b>BOOKS </b><small><i>etc.</i></small></p>
         </header>
-               
+                
         <div class="controls">
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Search employees or card IDs...">

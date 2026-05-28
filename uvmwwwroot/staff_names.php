@@ -3,12 +3,13 @@
 session_start();
 
 // 1. CHOOSE YOUR MANAGEMENT PASSWORD HERE:
-define('MANAGEMENT_PASSWORD', 'SUPERSECRETPASSWRD!!!'); // find a better way if this bothers you. Hint: with a local file instead, this could be improved... BY YOU!
-define('TIMEOUT_SECONDS', 20); // Inactivity threshold
+define('MANAGEMENT_PASSWORD', 'BOOKSetc.8732!'); 
+define('MANAGEMENT_TIMEOUT_SECONDS', 20); // Inactivity threshold
 
 // Handle Explicit Logout
 if (isset($_GET['logout'])) {
-    session_destroy();
+    unset($_SESSION['MANAGEMENT_PASSWORD_authenticated']);
+    unset($_SESSION['MANAGEMENT_last_activity']);
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
 }
@@ -16,8 +17,8 @@ if (isset($_GET['logout'])) {
 // Handle Login Form Submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['x_secure_token'])) {
     if ($_POST['x_secure_token'] === MANAGEMENT_PASSWORD) {
-        $_SESSION['authenticated'] = true;
-        $_SESSION['last_activity'] = time(); // Initialize activity timestamp
+        $_SESSION['MANAGEMENT_PASSWORD_authenticated'] = true;
+        $_SESSION['MANAGEMENT_last_activity'] = time(); // Initialize activity timestamp
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
     } else {
@@ -26,17 +27,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['x_secure_token'])) {
 }
 
 // Server-Side Inactivity Check (Fallback for security alignment)
-if (isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true) {
-    if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > TIMEOUT_SECONDS)) {
-        session_destroy();
+if (isset($_SESSION['MANAGEMENT_PASSWORD_authenticated']) && $_SESSION['MANAGEMENT_PASSWORD_authenticated'] === true) {
+    if (isset($_SESSION['MANAGEMENT_last_activity']) && (time() - $_SESSION['MANAGEMENT_last_activity'] > MANAGEMENT_TIMEOUT_SECONDS)) {
+        unset($_SESSION['MANAGEMENT_PASSWORD_authenticated']);
+        unset($_SESSION['MANAGEMENT_last_activity']);
         header("Location: " . $_SERVER['PHP_SELF'] . "?reason=timeout");
         exit;
     }
-    $_SESSION['last_activity'] = time(); // Refresh active timestamp on server interactions
+    $_SESSION['MANAGEMENT_last_activity'] = time(); // Refresh active timestamp on server interactions
+}
+
+// If the JavaScript idle timer triggered a timeout redirect, clear the access tokens immediately
+if (isset($_GET['reason']) && $_GET['reason'] === 'timeout') {
+    unset($_SESSION['MANAGEMENT_PASSWORD_authenticated']);
+    unset($_SESSION['MANAGEMENT_last_activity']);
 }
 
 // If user is not authenticated, show the login gate
-if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
+if (!isset($_SESSION['MANAGEMENT_PASSWORD_authenticated']) || $_SESSION['MANAGEMENT_PASSWORD_authenticated'] !== true) {
     $display_msg = "Management Access";
     if (isset($_GET['reason']) && $_GET['reason'] === 'timeout') {
         $login_error = "Logged out due to 20 seconds of inactivity.";
@@ -73,12 +81,12 @@ if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
     exit;
 }
 
-// Configuration 
-$pi_ip = "192.168.X.X"; 
-$pi_user = "YOURPIUSER";
-$remote_file = "/home/YOURPIUSER/nfc/names.csv";
+// Configuration
+$pi_ip = "192.168.1.199"; 
+$pi_user = "javier";
+$remote_file = "/home/javier/nfc/names.csv";
 $local_tmp = "/tmp/names.csv";
-$ssh_key = "/var/www/html/.ssh/id_ed25519"; // find a better way if this bothers you. Hint: the docker-compose-lamp could be improved... BY YOU!
+$ssh_key = "/var/www/html/.ssh/id_ed25519";
 
 $message = "";
 

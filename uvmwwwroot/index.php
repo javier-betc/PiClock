@@ -1,3 +1,79 @@
+<?php
+// Start a secure session
+session_start();
+
+// 1. CHOOSE YOUR MANAGEMENT PASSWORD HERE:
+define('MANAGEMENT_PASSWORD', 'STAFFPASSWORD'); // find a better way if this bothers you. Hint: with a local file instead, this could be improved... BY YOU!
+define('TIMEOUT_SECONDS', 7200); // Inactivity threshold
+
+// Handle Explicit Logout
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+}
+
+// Handle Login Form Submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['x_secure_token'])) {
+    if ($_POST['x_secure_token'] === MANAGEMENT_PASSWORD) {
+        $_SESSION['authenticated'] = true;
+        $_SESSION['last_activity'] = time(); // Initialize activity timestamp
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    } else {
+        $login_error = "Incorrect password access denied.";
+    }
+}
+
+// Server-Side Inactivity Check (Fallback for security alignment)
+if (isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true) {
+    if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > TIMEOUT_SECONDS)) {
+        session_destroy();
+        header("Location: " . $_SERVER['PHP_SELF'] . "?reason=timeout");
+        exit;
+    }
+    $_SESSION['last_activity'] = time(); // Refresh active timestamp on server interactions
+}
+
+// If user is not authenticated, show the login gate
+if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
+    $display_msg = "Staff Access";
+    if (isset($_GET['reason']) && $_GET['reason'] === 'timeout') {
+        $login_error = "Logged out due to 2 hours of inactivity.";
+    }
+    ?>
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Management Login</title>
+        <style>
+            body { font-family: Arial, sans-serif; background-color: #f4f6f9; padding-top: 100px; text-align: center; }
+            .login-box { max-width: 320px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+            h2 { margin-bottom: 20px; color: #333; }
+            input[type="password"] { width: 90%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+            button { width: 97%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+            button:hover { background-color: #0056b3; }
+            .error { color: #dc3545; font-weight: bold; margin-bottom: 15px; font-size: 14px; }
+        </style>
+    </head>
+    <body>
+        <div class="login-box">
+            <h2><?= htmlspecialchars($display_msg) ?></h2>
+            <?php if (isset($login_error)): ?>
+                <div class="error"><?= htmlspecialchars($login_error) ?></div>
+            <?php endif; ?>
+            <form method="POST" autocomplete="off">
+                <input type="password" name="x_secure_token" placeholder="Enter Password" autocomplete="new-password" required autofocus>
+                <button type="submit">Log In</button>
+            </form>
+        </div>
+    </body>
+    </html>
+    <?php
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -1,8 +1,8 @@
 #!/bin/bash
 # added sudo crontab to the pi to trim old data at 2 am:
-# 0 2 * * * /bin/bash /home/javier/nfc/clean_old_logs.sh >/dev/null 2>&1
+# 0 2 * * * /bin/bash /home/YOURPIUSER/nfc/clean_old_logs.sh >/dev/null 2>&1
 
-TIMES_FILE="/home/javier/nfc/times.csv"
+TIMES_FILE="/home/YOURPIUSER/nfc/times.csv"
 
 # 1. Get the date 6 months ago (for testing)
 LOG_CUTOFF=$(date -d "6 months ago" +%Y-%m-%d)

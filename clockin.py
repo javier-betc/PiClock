@@ -4,7 +4,10 @@ stretching support), SPI, or UART. SPI is best, it uses the most pins but
 is the most reliable and universally supported.
 After initialization, try waving various 13.56MHz RFID cards over it!
 Modified and enhanced by Javier@Books etc. May/June 2025
-This example is production ready and has been working for a year now. We use an excel file that lists the date swiped and name of employee
+This example is production ready and has been working since June 2025. 
+We were using an excel file that lists the date swiped and name of employee, 
+but now I developed a php webapp with the same functionality and nicer look.
+Copyleft by F.Javier Puig Diaz, May 2026
 """
 
 import RPi.GPIO as GPIO # used for nfc and buzzer
@@ -14,7 +17,7 @@ from time import sleep # added for buzzer
 from pathlib import Path # added to 'touch' the csv if it does not exist yet or gets deleted
 
 from pn532 import *
-Path('/home/javier/nfc/times.csv').touch()
+Path('/home/YOURPIUSER/nfc/times.csv').touch()
 
 if __name__ == '__main__':
     try:

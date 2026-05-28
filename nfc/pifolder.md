@@ -6,10 +6,9 @@ in my example I mounted a "NAS" and a "www" folder on the pi's /etc/fstab so the
 names.csv and times.csv on those locations with simple cp commands...
 You could say that IF you want to implement your own version and want to do it my way, this a PREREQUISITE then:
 
-- mount on the pi's /etc/fstab 2 targets:
-//192.168.X.X/NASFOLDER /media/NAS cifs credentials=/root/.NASCREDS,uid=1000,gid=1000,noauto,x-systemd.automount,x-systemd.mount-timeout=30 0 0
-
-//192.168.X.Y/WWWROOTFOLDER /media/uvm cifs credentials=/root/.UVMCREDS,uid=1000,gid=1000,noauto,x-systemd.automount,x-systemd.mount-timeout=30 0 0
+mount on the pi's /etc/fstab 2 targets:
+ - //192.168.X.X/NASFOLDER /media/NAS cifs credentials=/root/.NASCREDS,uid=1000,gid=1000,noauto,x-systemd.automount,x-systemd.mount-timeout=30 0 0
+ - //192.168.X.Y/WWWROOTFOLDER /media/uvm cifs credentials=/root/.UVMCREDS,uid=1000,gid=1000,noauto,x-systemd.automount,x-systemd.mount-timeout=30 0 0
 
 - make sure you have in the /root/folder the CREDS files with username and password for the "NAS" and "UVM"
 

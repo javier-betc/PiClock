@@ -3,7 +3,7 @@
 session_start();
 
 // 1. CHOOSE YOUR MANAGEMENT PASSWORD HERE:
-define('MANAGEMENT_PASSWORD', 'SuperSecurePassword123'); // find a better way if this bothers you. Hint: having pwd on file... could be improved... BY YOU! 
+define('MANAGEMENT_PASSWORD', 'SUPERSECRETPASSWRD!!!'); // find a better way if this bothers you. Hint: with a local file instead, this could be improved... BY YOU!
 define('TIMEOUT_SECONDS', 20); // Inactivity threshold
 
 // Handle Explicit Logout
@@ -73,7 +73,7 @@ if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
     exit;
 }
 
-// Configuration you NEED TO CHANGE:
+// Configuration 
 $pi_ip = "192.168.X.X"; 
 $pi_user = "YOURPIUSER";
 $remote_file = "/home/YOURPIUSER/nfc/names.csv";

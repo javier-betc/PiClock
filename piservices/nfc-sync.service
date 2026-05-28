@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-User=javier
+User=YOURPIUSERNAME
 ExecStart=/home/YOURPIUSERNAME/nfc/sync_clocks.sh
 Restart=on-failure
 RestartSec=5

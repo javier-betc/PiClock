@@ -5,7 +5,7 @@ After=multi-user.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python /home/javier/nfc/emptycards.py
+ExecStart=/usr/bin/python /home/YOURPIUSER/nfc/emptycards.py
 Restart=always
 
 [Install]

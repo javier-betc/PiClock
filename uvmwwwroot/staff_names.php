@@ -4,7 +4,7 @@ $pi_ip = "192.168.X.X";
 $pi_user = "YOURPIUSER";
 $remote_file = "/home/YOURPIUSER/nfc/names.csv";
 $local_tmp = "/tmp/names.csv";
-$ssh_key = "/var/www/html/.ssh/id_ed25519"; // find a better way it this bothers you. Hint: the docker-compose-lamp could be improved... BY YOU!
+$ssh_key = "/var/www/html/.ssh/id_ed25519"; // find a better way if this bothers you. Hint: the docker-compose-lamp could be improved... BY YOU!
 
 $message = "";
 

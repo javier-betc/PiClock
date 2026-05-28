@@ -3,7 +3,7 @@
 session_start();
 
 // 1. CHOOSE YOUR MANAGEMENT PASSWORD HERE:
-define('STAFF_PASSWORD', 'password123'); // find a better way if this bothers you. Hint: with a local file instead, this could be improved... BY YOU!
+define('STAFF_PASSWORD', 'password123'); // find a better way if this bothers you. Hint: with a local file or sys variable instead, this could be improved... BY YOU!
 define('TIMEOUT_SECONDS', 86400); // Inactivity threshold
 
 // Handle Explicit Logout

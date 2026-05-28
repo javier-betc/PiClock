@@ -3,7 +3,7 @@
 session_start();
 
 // 1. CHOOSE YOUR MANAGEMENT PASSWORD HERE:
-define('MANAGEMENT_PASSWORD', 'SuperSecurePassword123'); 
+define('MANAGEMENT_PASSWORD', 'SuperSecurePassword123'); // find a better way if this bothers you. Hint: having pwd on file... could be improved... BY YOU! 
 define('TIMEOUT_SECONDS', 20); // Inactivity threshold
 
 // Handle Explicit Logout
